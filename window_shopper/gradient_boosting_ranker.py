@@ -15,6 +15,8 @@ from sklearn.tree._tree import _apply_tree
 from sklearn.tree._tree import MSE
 from sklearn.tree._tree import DTYPE
 
+from sklearn.externals import joblib
+
 import numpy as np;
 import pylab as pl;
 import sys;
@@ -36,6 +38,11 @@ class DocPairSampler:
         self.random_state = random_state;
         
     def sample(self, rd, groups, n, mask_doc_pairs=set()):
+        '''
+            sample n pairs of docs:
+                each pair of docs is corresponding to the same query;
+                one of them is relevant, and the other is irrelevant;
+        '''
         samples = [];
         group_ids = np.array(groups.keys());
         space_size = len(groups);
@@ -59,30 +66,24 @@ class DocPairSampler:
         return samples;
 
 class PredictSortGroups(dict):
+    '''
+        docid->sentence-id-array (sort from larger score to smaller score)
+    '''
     def __init__(self, pred, groups):
         for group in groups.values():
             for docid, senids in group.items():
                 self[docid] = senids[pred[senids,0].argsort()[::-1]]; 
 
-#class GradientComputer:
-#    def __init__(self, rd, rs, pred, groups, pred_sort_groups, random_state, do_consider_correct):
-#        self.rd = rd;
-#        self.rs = rs;
-#        self.pred = pred;
-#        self.groups = groups;
-#        self.pred_sort_groups = pred;
-#        self.do_consider_correct = do_consider_correct;
-#        
-#    def __call__(self, docpairs):    
-
 class RankError:
+    """
+        Loss function for two-layer ranker. 
+    """
     def __init__(self, n1, n2, n3, tau):
         self.n1 = n1;
         self.n2 = n2;
         self.n3 = n3;
         self.tau = tau;
     
-    """Loss function for two-layer ranker. """
     def init_estimator(self):
         return ConstEstimator(1.0)
 
@@ -94,7 +95,7 @@ class RankError:
             senid2 = pred_sort_groups.get(docid2)[0];
             rs1, rs2 = rs[senid1], rs[senid2];
             if (rd1 - rd2) * (rs1 - rs2) <= 0:
-#                error += np.abs(rs1 - rs2);
+                #error += np.abs(rs1 - rs2);
                 error += 1.0
         return error / len(docpair_samples);
 
@@ -113,9 +114,6 @@ class RankError:
         pass
 
 
-
-
-
 class NegativeGradientComputer:
     def __init__(self, rd, rs, pred, groups, pred_sort_groups, n_sen_num, tau, do_consider_correct):
         self.rd = rd;
@@ -129,20 +127,19 @@ class NegativeGradientComputer:
     def compute(self, docpairs):
         negative_gradients = np.zeros((2, self.rs.shape[0]), dtype=np.float64);
         
-#        p = Pool(5);
         updates = map(self, docpairs);
         for pair_update in updates:
             for senid, update in pair_update:
-                negative_gradients[0, senid] += update;
-                negative_gradients[1, senid] += 1.0;
+                negative_gradients[0, senid] += update;# update for the sentence
+                negative_gradients[1, senid] += 1.0;# number of update for the sentence
                 
         negative_gradients, senid_masks = self.aggregate_negative_gradient(negative_gradients);
         return negative_gradients, senid_masks;        
         
     def __call__(self, docpair):
-#       
-#        print 'updating gradient...'
-        
+        '''
+            get the negative gradient update list
+        '''
         docid1, docid2 = docpair;
         rd1, rd2 = self.rd[docid1], self.rd[docid2];
         senids1 = self.pred_sort_groups.get(docid1);
@@ -158,18 +155,15 @@ class NegativeGradientComputer:
         return update_list;
     
     def aggregate_negative_gradient(self, negative_gradients):
-        
-        senid_masks = negative_gradients[1, ] <> 0;
-#        print 'ng:', negative_gradients;
-#        print 'masks:', masks;
+        senid_masks = negative_gradients[1, ] <> 0;#updated sentence ids
         negative_gradients[1, negative_gradients[1, ] == 0] = 1;
-        negative_gradients = negative_gradients[0, ] / negative_gradients[1, ];
+        negative_gradients = negative_gradients[0, ] / negative_gradients[1, ];#average update for each sentence
         return negative_gradients, senid_masks;
         
     
     def update_for_error(self, sen_ids, pilot_rs):
         update_list = [];
-        
+        #1. get good sentence ids
         rs1 = self.rs[sen_ids];
         first_sen_id = sen_ids[0];
         first_rs = self.rs[first_sen_id];
@@ -177,23 +171,21 @@ class NegativeGradientComputer:
             good_sen_ids = sen_ids[rs1 < pilot_rs]; 
         else:
             good_sen_ids = sen_ids[rs1 > pilot_rs];
-        if good_sen_ids.size == 0:
-            return update_list;
+        if good_sen_ids.size == 0:# nothing to update if all sentences are not good
+            return update_list; 
         
+        #2. foreach good sentence and first sentence, append the negative gradient to list
         sample_good_sen_ids = good_sen_ids[np.random.randint(0, len(good_sen_ids), self.n_sen_num)];
         first_sen_pred = self.pred[first_sen_id];
         for good_sen_id in sample_good_sen_ids:
             good_sen_pred = self.pred[good_sen_id];
-#            print 'first sen id=%d, fir_rs=%f, good_sen_id=%d, good_rs=%f' % (first_sen_id, first_rs, good_sen_id, rs[good_sen_id]);
-#            print 'first sen pred=%f, good_sen_pred=%f' % (first_sen_pred, good_sen_pred);
-#            print 'update for the first sen=%f, update for the good sen=%f' % (good_sen_pred - first_sen_pred - self.tau, first_sen_pred - good_sen_pred + self.tau);
             update_list.append((first_sen_id, good_sen_pred - first_sen_pred - self.tau));
             update_list.append((good_sen_id, first_sen_pred - good_sen_pred + self.tau));
         return update_list;
         
     def update_for_correct(self, sen_ids, pilot_rs):
         update_list = [];
-        
+        #1. get bad sentences
         rs1 = self.rs[sen_ids];
         first_sen_id = sen_ids[0]; 
         first_rs = self.rs[first_sen_id];
@@ -204,9 +196,9 @@ class NegativeGradientComputer:
         if bad_sen_ids.size == 0:
             return update_list;
         
+        #2. update for first sentence and each sampled bad sentence
         sample_bad_sen_ids = bad_sen_ids[np.random.randint(0, len(bad_sen_ids), self.n_sen_num)];
         for bad_sen_id in sample_bad_sen_ids:
-#            print first_sen_id, bad_sen_id;
             update_list.append((first_sen_id, 0));
             update_list.append((bad_sen_id, 0));
         return update_list;
@@ -251,12 +243,7 @@ class GradientBoostingRanker(BaseEnsemble):
         """Fit another stage of ``n_classes_`` trees to the boosting model. """
         
         k = 0;
-#        print 'computing gradient...'
         residual, masks = self.negative_gradient_computer.compute(training_docpair_samples);
-
-
-#        print 'building tree...';
-        # induce regression tree on residuals
         tree = Tree(1, self.n_features)
         tree.build(X, residual, MSE(), self.max_depth,
                        self.min_samples_split, self.min_samples_leaf, 0.0,
@@ -298,81 +285,55 @@ class GradientBoostingRanker(BaseEnsemble):
         self : object
             Returns self.
         """
-#        print 'initial...';
+        #1. initial data
         X = np.asfortranarray(X, dtype=DTYPE)
         rd = np.ascontiguousarray(rd)
         rs = np.ascontiguousarray(rs);
+        test_X = np.asfortranarray(test_X, dtype=DTYPE);
+        test_rd = np.ascontiguousarray(test_rd);
+        test_rs = np.ascontiguousarray(test_rs);
 
         n_samples, n_features = X.shape
         if rs.shape[0] != n_samples:
             raise ValueError("Number of labels does not match " \
                              "number of samples.")
         self.n_features = n_features
-
-        loss = RankError(self.n1, self.n2, self.n3, self.tau);
-
-        # store loss object for future use
-        self.loss_ = loss
-        
-
-        self.init = ConstEstimator(0);
-
-        # create argsorted X for fast tree induction
         X_argsorted = np.asfortranarray(
             np.argsort(X.T, axis=1).astype(np.int32).T)
 
-        # sampling training and test
+        self.train_score_ = np.zeros((self.n_estimators,), dtype=np.float64) # training score for each iteration
+        self.oob_score_ = np.zeros((self.n_estimators), dtype=np.float64); # test score for each iteration
+
+        #2. initial functions
+        self.loss_ = RankError(self.n1, self.n2, self.n3, self.tau);
+        self.init_estimator = ConstEstimator(0);
         docpair_sampler = DocPairSampler(self.random_state);
-#        print 'generating training...'
-        
-
-        # init predictions
-        pred = self.init.predict(X)
-
         self.estimators_ = np.empty((self.n_estimators, 1),
                                     dtype=np.object)
 
-        self.train_score_ = np.zeros((self.n_estimators,), dtype=np.float64)
-        if test_X <> None:
-            test_X = np.asfortranarray(test_X, dtype=DTYPE);
-            test_rd = np.ascontiguousarray(test_rd);
-            test_rs = np.ascontiguousarray(test_rs);
-            test_y_pred = self.init.predict(test_X);
-            self.oob_score_ = np.zeros((self.n_estimators), dtype=np.float64);
-        else:
-            self.oob_score_ = 0;
-
         t = time.time();
+        #3. run fitting
+        pred = self.init_estimator.predict(X)
+        test_y_pred = self.init_estimator.predict(test_X);  
         pred_sort_groups = PredictSortGroups(pred, groups);
-        training_docpair_samples = docpair_sampler.sample(rd, groups, self.n1);
-        test_docpair_samples = docpair_sampler.sample(rd, groups, self.n3);
-#        print 'training-score:', loss(rd, rs, pred, groups, pred_sort_groups, self.random_state, training_docpair_samples);
-#        print 'test-score:', loss(rd, rs, pred, groups, pred_sort_groups, self.random_state, test_docpair_samples);
-        # perform boosting iterations
+
         for i in range(self.n_estimators):
             print '%.4f' % (time.time() - t), 'iteration', i;
+
+            # fit on the training data
             self.negative_gradient_computer = NegativeGradientComputer(rd, rs, pred, groups, pred_sort_groups, self.n2, self.tau, self.do_consider_correct);
-#            print 'sorting predict value...'
-
             training_docpair_samples = docpair_sampler.sample(rd, groups, self.n1);
-            
-
-#            print 'fitting...'
-            # fit next stage of trees
             pred = self.fit_stage(i, X, X_argsorted, rd, rs, pred, groups, pred_sort_groups, training_docpair_samples);
-
             pred_sort_groups = PredictSortGroups(pred, groups);
-#            print 'computing loss...'
-            # track deviance (= loss)
-            self.train_score_[i] = loss(rd, rs, pred, groups, pred_sort_groups, self.random_state, training_docpair_samples);
+            self.train_score_[i] = self.loss_(rd, rs, pred, groups, pred_sort_groups, self.random_state, training_docpair_samples);
             print 'training score:', self.train_score_[i];
     
-            if test_X <> None:
-                test_docpair_samples = docpair_sampler.sample(test_rd, test_groups, self.n3);
-                test_y_pred[:,0] += self.learn_rate * self.estimators_[i, 0].predict(test_X).ravel();
-                test_pred_sort_groups = PredictSortGroups(test_y_pred, test_groups);
-                self.oob_score_[i] = loss(test_rd, test_rs, test_y_pred, test_groups, test_pred_sort_groups, self.random_state, test_docpair_samples);
-                print 'test score:', self.oob_score_[i]
+            # test on the test data
+            test_docpair_samples = docpair_sampler.sample(test_rd, test_groups, self.n3);
+            test_y_pred[:,0] += self.learn_rate * self.estimators_[i, 0].predict(test_X).ravel();
+            test_pred_sort_groups = PredictSortGroups(test_y_pred, test_groups);
+            self.oob_score_[i] = self.loss_(test_rd, test_rs, test_y_pred, test_groups, test_pred_sort_groups, self.random_state, test_docpair_samples);
+            print 'test score:', self.oob_score_[i]
             
         return self
 
@@ -402,7 +363,7 @@ class GradientBoostingRanker(BaseEnsemble):
             raise ValueError("X.shape[1] should be %d, not %d." % 
                              (self.n_features, X.shape[1]))
 
-        y = self.init.predict(X).astype(np.float64)
+        y = self.init_estimator.predict(X).astype(np.float64)
 #        print self.estimators_.shape, X.shape, y.shape;
         predict_stages(self.estimators_, X, self.learn_rate, y)
         return y
@@ -472,52 +433,56 @@ def filter_datset(inpath, outpath, n):
     writer.close();
 
 def load_dataset(path):
-        f = open(path);
-        X = [];
-        sr_array = [];
-        dr_array = [];
-        groups = {};
-        lines = f.readlines();
+    '''
+        load dataset
+        return: feature-vectors, doc-relevances, sentence-relevances, query->doc->sentence-id-array
+    '''
+    f = open(path);
+    X = [];# feature vectors
+    sr_array = [];# relevance of sentences 
+    dr_array = [];# relevance of documents
+    groups = {};# query->doc-id->sentence-id-array
+    lines = f.readlines();
+    
+    next_doc_id = 0;
+    sen_id = -1;
+    docno_docid_map = {};
+    for line in lines:
+        # read line and parse 
+        line = line.strip();
+        pos = line.find('#');
+        if pos >= 0:
+            line = line[:pos];
+        tokens = line.split();
+        qid, docno, dr, sr = tokens[:4];
+        qid, dr = int(qid), int(dr);
+        sr = float(sr);
+        features = map(float, tokens[4:]);
         
-        next_doc_id = 0;
-        sen_id = -1;
-        docno_docid_map = {};
-        for line in lines:
-            line = line.strip();
-            pos = line.find('#');
-            if pos >= 0:
-                line = line[:pos];
-            tokens = line.split();
-            qid, docno, dr, sr = tokens[:4];
-            qid, dr = int(qid), int(dr);
-            sr = float(sr);
-            features = map(float, tokens[4].split(','));
-            if len(features) < 15:
-                continue;
+        # build groups according to queries: query->doc-id->sentence-id-array
+        if not groups.has_key(qid):
+            groups[qid] = {};
+        if not docno_docid_map.has_key(docno):
+            docno_docid_map[docno] = next_doc_id;
+            dr_array.append(dr);
+            next_doc_id += 1;
+        doc_id = docno_docid_map[docno];
+        if not groups[qid].has_key(doc_id):
+            groups[qid][doc_id] = [];
             
-            if not groups.has_key(qid):
-                groups[qid] = {};
-            if not docno_docid_map.has_key(docno):
-                docno_docid_map[docno] = next_doc_id;
-                dr_array.append(dr);
-                next_doc_id += 1;
-            doc_id = docno_docid_map[docno];
-            if not groups[qid].has_key(doc_id):
-                groups[qid][doc_id] = [];
-                
-            sen_id += 1;
-            groups[qid][doc_id].append(sen_id);
-            
-            X.append(features);
-            sr_array.append(sr);
-            
-        X = np.array(X);
-        dr_array = np.array(dr_array);
-        sr_array = np.array(sr_array);
-        for group in groups.values():
-            for doc_id, sen_ids in group.items():
-                group[doc_id] = np.array(sen_ids);
-        return X, dr_array, sr_array, groups;
+        sen_id += 1;
+        groups[qid][doc_id].append(sen_id);
+        
+        X.append(features);
+        sr_array.append(sr);
+        
+    X = np.array(X);
+    dr_array = np.array(dr_array);
+    sr_array = np.array(sr_array);
+    for group in groups.values():
+        for doc_id, sen_ids in group.items():
+            group[doc_id] = np.array(sen_ids);
+    return X, dr_array, sr_array, groups;
             
 
 def write_predict(pred_y, path):
@@ -527,17 +492,16 @@ def write_predict(pred_y, path):
         f.write('%f\n' % pred_y[i,0]);
     f.close();
 
-def do_rank(argv):
-    path, test_path = argv;
+def do_fit(train_path, model_path, test_path):
     
-    params = {'n_estimators': 200, 'max_depth': 4, 'min_samples_split': 1,
+    params = {'n_estimators': 1500, 'max_depth': 3, 'min_samples_split': 4,
               'min_samples_leaf':1, 'random_state':None, 'do_consider_correct':1,
-          'learn_rate': 0.2, 'n1': 10000, 'n2': 1, 'n3': 20000, 'tau': 0.01};
+          'learn_rate': 0.1, 'n1': 10000, 'n2': 1, 'n3': 100000, 'tau': 0.01};
 
     ranker = GradientBoostingRanker(**params);
     
     print 'loading data...'
-    X, dr, sr, groups = load_dataset(path)
+    X, dr, sr, groups = load_dataset(train_path)
     test_X, test_dr, test_sr, test_groups = load_dataset(test_path);
     
     print 'starting fit...'
@@ -570,11 +534,38 @@ def do_rank(argv):
     
     print feature_importance;
 
-    #pl.show();
+    print 'storing to %s' % model_path
+    joblib.dump(ranker, model_path, 3) 
+    pl.show()
+
+def test_save_load():
+    
+    params = {'n_estimators': 10, 'max_depth': 4, 'min_samples_split': 1,
+              'min_samples_leaf':1, 'random_state':None, 'do_consider_correct':1,
+          'learn_rate': 0.2, 'n1': 100, 'n2': 1, 'n3': 100, 'tau': 0.01};
+    train_path = 'test-data/ap.data.100'
+    test_path = 'test-data/ap.data.100'
+    model_path = 'test-data/model'
+
+    ranker = GradientBoostingRanker(**params);
+    
+    print 'loading data...'
+    X, dr, sr, groups = load_dataset(train_path)
+    test_X, test_dr, test_sr, test_groups = load_dataset(test_path);
+    
+    print 'starting fit...'
+    ranker.fit(X, dr, sr, groups, test_X, test_dr, test_sr, test_groups);
+
+    X = np.array([5, 2.76546890301, 2.61602236107, 3.43778910609, 3.15218685017, 0.640762022118, 0.00957694161563, 0.0258304902975])
+    print ranker.predict(X)
+    joblib.dump(ranker, model_path, 3) 
+    model = joblib.load(model_path) 
+    print model.predict(X)
+
     
     
 def do_label(train_path, test_path, pred_path):
-    params = {'n_estimators': 200, 'max_depth': 4, 'min_samples_split': 1,
+    params = {'n_estimators': 100, 'max_depth': 4, 'min_samples_split': 1,
               'min_samples_leaf':1, 'random_state':None, 'do_consider_correct':1,
           'learn_rate': 0.2, 'n1': 10000, 'n2': 1, 'n3': 20000, 'tau': 0.01};
 
@@ -631,21 +622,21 @@ def do_convert_standard_feature(original_feature_path, standard_feature_path):
         rs = features.split(',')[-2];
         writer.write('%s %s %s %s %s\n' % (qid, docno, rd, rs, features));
     writer.close();
-    
-    
+
+
 if __name__ == '__main__':
     option = sys.argv[1];
     argv = sys.argv[2:];
-    if option == '--convert':
-        do_convert_standard_feature(*argv);
-    elif option == '--fit':
-        do_rank(argv);
+    if option == '--fit':
+        do_fit(*argv);
     elif option == '--param':
         do_parameter_selection(argv);
     elif option == '--filter':
         filter_datset(*argv);
     elif option == '--label':
         do_label(*argv);
+    elif option == '--test-save-load':
+        test_save_load(*argv)
     else:
         print 'error param!';
     

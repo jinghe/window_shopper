@@ -58,10 +58,6 @@ class Index:
         f = os.popen(cmd);
         lines = f.readlines();
         f.close();
-        for i in xrange(len(lines)):
-            if lines[i] == '\n':
-                lines = lines[i+1:];
-                break;
         content = ''.join(lines);
         return content;
 
@@ -89,6 +85,15 @@ class Index:
             return 0;
         else:
             return int(line.strip());
+
+    def get_count(self, query, dcount=False):
+        if dcount: option = 'dxcount'
+        else: option = 'xcount'
+        cmd = 'dumpindex %s %s "%s"' % (self.path, option, query)
+        #print cmd
+        f = os.popen(cmd)
+        line = f.readline()
+        return int(line.split(':')[-1])
 
     def get_docno(self, inner_doc_id):
         cmd = 'dumpindex %s dn %d' % (self.path, inner_doc_id);
