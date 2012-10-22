@@ -13,7 +13,7 @@ Dependent Packages
 * scikit-learn
 * nltk 2.0.1
 
-Re-creating the data/ folder
+Data
 ----------------------------
 
 The system needs a dict folder with the following data:
@@ -23,6 +23,6 @@ The system needs a dict folder with the following data:
 
 Basic Usage
 -----------
-python SnippetGenerator --score-paragraph <query-path> <doc-path> <paragraph-path> <model-path>
-python SnippetGenerator --rank-paragraph <query-path> <doc-path> <model-path> <paragraph-len> <paragraph-inc>
+* python SnippetGenerator --score-paragraph <query-path> <doc-path> <paragraph-path> <model-path>
+* python SnippetGenerator --rank-paragraph <query-path> <doc-path> <model-path> <paragraph-len> <paragraph-inc>
 
