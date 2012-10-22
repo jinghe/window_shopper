@@ -1,0 +1,397 @@
+HTTP/1.1 200 OK
+Content-Type: text/html
+X-Powered-By: PHP/4.3.10
+Server: Apache/2.0.51 (Fedora)
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Date: Sat, 17 Jan 2009 09:07:39 GMT
+Pragma: no-cache
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Connection: close
+Set-Cookie: PHPSESSID=8d13a9906a4e10d041f3f2109ef20703; path=/
+Content-Length: 18203
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
+<head>
+<base href="http://www.edc.centralillinois.org/" />
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+<meta name="author" content="Infogenic Systems" />
+<meta name="description" content="" />
+<meta name="keywords" content="Illinois, sales,tax,income, corporate" />
+<meta name="robots" content="all" />
+<script type="text/javascript" src="flash/swfobject.js"></script>
+<title>
+Illinois State Taxes | Economic Development Council for Central Illinois</title>
+<link href="styles/styles.css" rel="stylesheet" type="text/css" />
+<link href="styles/stylesNH.css" rel="stylesheet" type="text/css" />
+<!--[if IE 6]>
+<link href="styles/ie6.css" rel="stylesheet" type="text/css" />
+<![endif]-->
+<!--[if IE 7]>
+<link href="styles/ie7.css" rel="stylesheet" type="text/css" />
+<![endif]-->
+<link href="styles/jquery.css" rel="stylesheet" type="text/css" />
+<!-- for jquery -->
+<script src="javascript/jquery.js" type="text/javascript"></script>
+<script>
+		<!--
+		function fixedSize(url,name,features) {
+			//This launches a new window and then
+			//focuses it if window.focus() is supported.
+			win = window.open(url,name,features);
+		}
+		//-->
+</script>
+<script type="text/javascript">
+		
+	$(document).ready(function(){
+		
+		//$("dd:not(:first)").hide();
+		$("dd").hide();
+		/*
+		$("dt a").click(function(){
+			$("dd:visible").slideUp("slow");
+			$(this).parent().next().slideDown("slow");
+			return false;
+		});
+		*/
+
+        $('dt').hover(function() {
+        	$(this).addClass('navHover');
+        }, function() {
+        	$(this).removeClass('navHover');
+        });
+		
+		/*$('dt').onClick(function() {
+        	$(this).addClass('navClicked');
+        }, function() {
+        	$(this).removeClass('navClicked');
+        });*/
+
+		$("dt a").each(function(){
+			//$("dd:visible").slideUp("slow");
+			if($(this).parent().next().get(0).nodeName.toUpperCase() == "DD")
+			{
+				$(this).click(function(){
+					$("dt").removeClass('navSelected');
+					$("dd:visible").slideUp("fast");
+					$(this).parent().addClass('navSelected').next().slideDown("fast");
+					document.cookie ="myContents=Quackit JavaScript cookie experiment; expires=Fri, 19 Oct 2007 12:00:00 UTC; path=/";
+					//document.write($(this).parent());
+					return false;
+				});			
+			}
+			//$(this).parent().next().slideDown("slow");
+			//return false;
+		});
+		
+		/*
+		$("dt.noMenu a").click(function(){
+			//$("dd:visible").slideUp("slow");
+			//$(this).parent().next().slideDown("slow");
+			return false;
+		});
+		*/		
+	});
+</script>
+
+<link href="styles/sitemap.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+	<div id="header">
+	<a href="/">
+	<!--<img id="top_righty" src="index_files/topRight.gif" align="right"/>-->
+	<h1 class="logo_img mir">EDC - Sites, Buildings, Statistics, and Development for Central Illinois</h1>
+	</a>
+	<h2 id="top_righty" class="mir">Economic Development Council for Central Illinois</h2>
+  <ul id="quickLink">
+    <li><a href="http://www.locationone.com/lois/logon.do?username=Central+Illinois&appsection=localities"> <img src="images/arrow_new.gif" alt="Site 
+and Building Database" border="0" /> Site &amp; Buildings Database</a> </li>
+    <li><a href="/cat/31"> <img src="images/arrow_new.gif" alt="Central Illinois Statistics" border="0" /> Central Illinois Statistics</a> </li>
+    <li><a href="/goto/ContactDirector"> <img src="images/arrow_new.gif" alt="Latest News" border="0" />Contact Development Director</a> </li>
+  </ul>
+</div>
+<div id="outer_wrapper">
+<div id="wrapper">
+<div id="container">
+<div id="content">
+<div id="left">
+  <div id="search_bar">
+    <form action="/search/" style="margin:0px;">
+      <table>
+        <tr>
+          <td><img class="search_text" src="../images/search_text.gif" alt="Search the EDC for Central Illinois Site" /></td>
+          <td><input class="search_box" type="text" size="15" name="q" value="" /></td>
+          <td><input name="submit" type="image" class="search_button" value="Search" src="../images/search_go.gif" /></td>
+        </tr>
+      </table>
+    </form>
+  </div>
+  <div id="nav">
+    
+<dl>
+<script language="JavaScript">
+<!--  hide from older browsers
+   javaURL = "http://edc.conceptproof.com//";
+// -->
+</script>
+  <dt><a href="/" onclick="if(javaURL == document.cookie.split('=')[2]) { alert('hi') };"><h2>Home</h2></a></dt>
+<script language="JavaScript">
+<!--  hide from older browsers
+   javaURL = "http://edc.conceptproof.com/cat/31";
+// -->
+</script>
+  <dt><a href="cat/31" onclick="if(javaURL == document.cookie.split('=')[2]) { alert('hi') };"><h2>Data Center</h2></a></dt>
+<dd><ul>      <li><a href="goto/FastFacts">Fast Facts</a></li>
+      <li><a href="goto/Demographics">Demographics</a></li>
+      <li><a href="goto/RegionalEconomy">Regional Economy</a></li>
+      <li><a href="goto/Education">Education</a></li>
+      <li><a href="goto/Transportation">Transportation</a></li>
+      <li><a href="goto/EnergyTelecom">Energy and Telecom</a></li>
+      <li><a href="goto/Labor">Labor Force</a></li>
+      <li><a href="goto/StateTaxes">Illinois State Taxes</a></li>
+</dd></ul><script language="JavaScript">
+<!--  hide from older browsers
+   javaURL = "http://edc.conceptproof.com/cat/32";
+// -->
+</script>
+  <dt><a href="cat/32" onclick="if(javaURL == document.cookie.split('=')[2]) { alert('hi') };"><h2>Sites & Buildings</h2></a></dt>
+<dd><ul>      <li><a href="goto/SitesBuildings">Area Site / Buildings Database</a></li>
+</dd></ul><script language="JavaScript">
+<!--  hide from older browsers
+   javaURL = "http://edc.conceptproof.com/cat/33";
+// -->
+</script>
+  <dt><a href="cat/33" onclick="if(javaURL == document.cookie.split('=')[2]) { alert('hi') };"><h2>Media</h2></a></dt>
+<dd><ul>      <li><a href="/latestNews.php">Recent News</a></li>
+      <li><a href="goto/StatsNRankings">Market Statistics and Rankings</a></li>
+      <li><a href="goto/Profiles">County & Community Profiles</a></li>
+      <li><a href="goto/QualityOfLife">Quality of Life Facts</a></li>
+      <li><a href="goto/HPintheNews">Heartland Partnership in the News</a></li>
+</dd></ul><script language="JavaScript">
+<!--  hide from older browsers
+   javaURL = "http://edc.conceptproof.com/cat/34";
+// -->
+</script>
+  <dt><a href="cat/34" onclick="if(javaURL == document.cookie.split('=')[2]) { alert('hi') };"><h2>Our Partners</h2></a></dt>
+<dd><ul>      <li><a href="goto/AboutUs">About The EDC for Central Illinois</a></li>
+      <li><a href="goto/HeartlandPartnership">The Heartland Partnership</a></li>
+      <li><a href="goto/Investors">Our Investors</a></li>
+      <li><a href="goto/BoardofDirectors">Our Board of Directors</a></li>
+      <li><a href="goto/EDGE">The EDGE</a></li>
+      <li><a href="goto/Links">Community Links</a></li>
+      <li><a href="goto/TransPORT">TransPORT - The Heart of Illinois Regional Port District</a></li>
+      <li><a href="goto/Chamber">Peoria Area Chamber of Commerce</a></li>
+</dd></ul><script language="JavaScript">
+<!--  hide from older browsers
+   javaURL = "http://edc.conceptproof.com/cat/35";
+// -->
+</script>
+  <dt><a href="cat/35" onclick="if(javaURL == document.cookie.split('=')[2]) { alert('hi') };"><h2>Services & Programs</h2></a></dt>
+<dd><ul>      <li><a href="goto/ZonesNTIFs">Enterprise Zone T.I.F. Districts</a></li>
+      <li><a href="goto/Targets">Targeted Industry Clusters</a></li>
+      <li><a href="goto/IncentivesNFinancing">Incentives and Financing</a></li>
+      <li><a href="goto/FTZ114">Foreign Trade Zone #114 - Central Illinois</a></li>
+      <li><a href="goto/BuildingCommunities">Building Communities Webinar Educational Series</a></li>
+      <li><a href="goto/InternationalTrade">International Trade</a></li>
+</dd></ul><script language="JavaScript">
+<!--  hide from older browsers
+   javaURL = "http://edc.conceptproof.com/cat/37";
+// -->
+</script>
+  <dt><a href="cat/37" onclick="if(javaURL == document.cookie.split('=')[2]) { alert('hi') };"><h2>EDC Recent News</h2></a></dt>
+<dd><ul>      <li><a href="goto/Infrastructure">Regional Infrastructure Project List Released</a></li>
+      <li><a href="goto/PeoriaRanks21">Peoria Ranks 21st Best Midsized City to do Business</a></li>
+      <li><a href="goto/AmericanAdventure">Peoria One of the "Next Great American Adventures"</a></li>
+      <li><a href="goto/PNICGrandOpening">Peoria NEXT Innovation Center Grand Opening Ceremony</a></li>
+      <li><a href="goto/RegionalRetailClimate">Regional Retail Economic Climate</a></li>
+      <li><a href="goto/GreenEnergyProgram">State Treasurer Cuts Interest Rates for Green Businesses</a></li>
+      <li><a href="goto/USNewsCaterpillar">U.S. NEWS & World Report - Peoria, Ill.: Caterpillar Exports Buoy City</a></li>
+      <li><a href="goto/Relocation">The Heartland Partnership Family of Companies to Relocate to Peoria Riverfront Village</a></li>
+      <li><a href="goto/HPAnnualMtg08">The Heartland Partnership Annual Meeting & Breakfast - 2008</a></li>
+      <li><a href="goto/MoneySmartWeek">MONEY SMART WEEK Returns April 6-12</a></li>
+      <li><a href="goto/MilkenRank08">Milken Institute Releases Ranking of America's Top-Performing Cities</a></li>
+      <li><a href="goto/EClimateFinancial">Economic Climate Report - Financial</a></li>
+      <li><a href="goto/EconomicClimate">Economic Climate Report</a></li>
+      <li><a href="goto/ProjectList">Comprehensive Project List</a></li>
+      <li><a href="goto/NBCNightlyNewsStory">Central Illinois gets National Attention on Thanksgiving</a></li>
+      <li><a href="goto/StudentImpact">Economic Impact of Bradley University Students</a></li>
+      <li><a href="goto/FinanceWorkshop">EDC Co-sponsors Finance & Resource Workshop</a></li>
+      <li><a href="goto/IRRTour">Illinois River Road Celebration Tour</a></li>
+      <li><a href="goto/CEDS2007">EDC Seeks Input for Regional Economic Plan</a></li>
+      <li><a href="goto/BuildingCommunitiesStory">EDC Offers "Building Communities" Webinar Series</a></li>
+      <li><a href="goto/RetailStudy">Be part of the Central Illinois Retail Study</a></li>
+</dd></ul></dl>
+  </div>
+</div>
+
+<div id="main">
+    <h2>
+    Illinois State Taxes  </h2>
+  
+<p> <em>To jump quickly to specific information on this page, select any of the following quick-links.</em><br />
+<table cellspacing="1" cellpadding="1" width="500" summary="" border="0">
+    <tbody>
+        <tr>
+            <td><a href="/goto/StateTaxes#stateunemploymentinsurance">State Unemployment Insurance</a></td>
+            <td><a href="/goto/StateTaxes#statepersonalincometax">State Personal Income Tax</a></td>
+        </tr>
+        <tr>
+            <td><a href="/goto/StateTaxes#salestax">Sales Tax</a></td>
+            <td><a href="/goto/StateTaxes#statecorporateincometax">State Corporate Income Tax</a></td>
+        </tr>
+    </tbody>
+</table>
+<br />
+<em><strong><a name="stateunemploymentinsurance"></a>State Unemployment Insurance </strong></em><br />
+Contribution Rate Determinations for 2002:<br />
+Maximum and minimum unemployment tax rates&nbsp;are 7.2% and 0.8% respectively, and the taxable wage base will be $12,000.<br />
+<font size="1"><em>Source: IDES, 2008</em><br />
+<br />
+<br />
+<font size="2">
+<table class="edcTable" cellspacing="0" cellpadding="0" width="500" summary="" border="1">
+    <tbody>
+        <tr>
+            <td bgcolor="#93dc43" colspan="4"><strong><a name="salestax"></a>Sales Tax</strong></td>
+        </tr>
+        <tr>
+            <td colspan="4"><em><strong>Illinois Sales Tax Rates Current as of July 1, 2008</strong></em></td>
+        </tr>
+        <tr>
+            <td>County</td>
+            <td>General Merchandise rate</td>
+            <td>Foods/Drugs/medical appliances rate</td>
+            <td>Vehicle rate</td>
+        </tr>
+        <tr>
+            <td>Peoria</td>
+            <td align="center">0.075</td>
+            <td align="center">0.01</td>
+            <td align="center">0.0625</td>
+        </tr>
+        <tr>
+            <td>Tazewell</td>
+            <td align="center">0.0775</td>
+            <td align="center">0.01</td>
+            <td align="center">0.0625</td>
+        </tr>
+        <tr>
+            <td>Woodford</td>
+            <td align="center">0.0825</td>
+            <td align="center">0.01</td>
+            <td align="center">0.0625</td>
+        </tr>
+    </tbody>
+</table>
+<font size="1">Source: Illinois Department of Revenue, 2008.</font></font></font><br />
+<br />
+<strong><a name="" statepersonalincometax=""></a>State Personal Income Tax</strong> <br />
+State Personal Income Tax in the state of Illinois is 3%.<br />
+<font size="1"><em>Source:&nbsp; Federation of Tax Administrators, 2004.</em></font><br />
+<br />
+<strong><a name="statecorporateincometax"></a>State Corporate Income Tax </strong><br />
+Illinois Corporate Income Tax is 7.3%. This includes a 2.5% personal property replacement tax.<br />
+<font size="1"><em>Source: Federation of Tax Administrators, 2004.</em></font><br />
+<table>
+    <tbody>
+    </tbody>
+</table>
+<table>
+    <tbody>
+    </tbody>
+</table> </p>
+
+<h5 style="font-weight:normal;"><i>&nbsp;</i></h5>
+
+  </div>
+</div>
+</div>
+<div id="sidebar">
+  <div id="flashy"></div>
+  <script type="text/javascript">
+		// <![CDATA[
+		var so = new SWFObject("flash/earthy.swf", "sotester", "240", "180", "8", "#ffffff");
+		//so.addVariable("flashVarText", "this is passed in via FlashVars"); // this line is optional, but this example uses the variable and displays this text inside the flash movie
+		so.useExpressInstall('flash/earthy.swf');
+		so.write("flashy");
+		// ]]>
+	</script>
+  <table>
+   <!-- <tr>
+      <td colspan="2"><div class="clear"><a class="contact" href="#" onClick="this.blur();"><span>Contact Development Director</span></a></div></td>
+    </tr> -->
+    <tr>
+      <td><div id="signUp">Sign Up for the EDC Property Flash
+          <p class="green">Type your E-mail Here</p>
+		<form action="/flashMailForm.php" method="post">
+          <input  size="10" class="news_search_box" type="text" name="c_email" value="Your Email" />
+          <input name="submit" type="image" class="news_search_button" value="Search" src="../images/signUp_go.png" />
+		</form>
+        </div></td>
+      <td><a class="investor" href="/goto/Investor" onClick="this.blur();"><span>Become<br />
+        An EDC<br />
+        Investor!</span></a></td>
+    </tr>
+	
+  </table>
+</div>
+<div class="clearing">&nbsp;</div>
+</div>
+</div>
+<div id="footer">
+  <table align="center" cellpadding="0" cellspacing="5">
+    <tr nowrap="nowrap">
+      <td class="footerParagraph">100 SW Water St. - Peoria, IL, 61602<br />
+        Copyright <strong>2009</strong> Economic Development Council for Central Illinois<br />
+        <a href="/">EDC Home</a> | <a href="sitemap.php">Site Map</a> | <a href="/search/">Search</a> | <a href="goto/contact">Contact Us</a> | <a href="mailto:cpatterson@edc.h-p.org?subject=Suggestions">Suggestions</a></td>
+      <td><a href="http://www.infogenic.net"><img src="images/poweredBy.gif" alt="Powered By Infogenic Systems" border="0" /></a> </td>
+    </tr>
+  </table>
+</div>
+<br />
+<table width="320">
+  <tr>
+    <td>&nbsp;</td>
+    <form action="http://www.google.com/translate" >
+      <script language="JavaScript">
+<!--
+document.write ("<input name=u value="+location.href+" type=hidden>")
+// -->
+</script>
+      <td><input name="hl" value="en" type="hidden">
+        <input name="ie" value="UTF8" type="hidden">
+        <input name="langpair" value="" type="hidden">
+        <input name="langpair" value="en|fr" title="Fran&#231;ais/French" src="http://photos1.blogger.com/img/43/1633/320/13539949_e76af75976.jpg" onclick="this.form.langpair.value=this.value" height="20" type="image" width="30">
+      </td>
+      <td width="40"><input name="langpair" value="en|de" title="Deutsch/German" src="http://photos1.blogger.com/img/43/1633/320/13539933_041ca1eda2.jpg" onclick="this.form.langpair.value=this.value" height="20" type="image" width="30">
+      </td>
+      <td width="40"><input name="langpair" value="en|it" title="Italiano/Italian" src="http://photos1.blogger.com/img/43/1633/320/13539953_0384ccecf9.jpg" onclick="this.form.langpair.value=this.value" height="20" type="image" width="30">
+      </td>
+      <td width="40"><input name="langpair" value="en|pt" title="Portugu&#234;s/Portuguese" src="http://photos1.blogger.com/img/43/1633/320/13539966_0d09b410b5.jpg" onclick="this.form.langpair.value=this.value" height="20" type="image" width="30">
+      </td>
+      <td width="40"><input name="langpair" value="en|es" title="Espa&#241;ol/Spanish" src="http://photos1.blogger.com/img/43/1633/320/13539946_2fabed0dbf.jpg" onclick="this.form.langpair.value=this.value" height="20" type="image" width="30">
+      </td>
+      <td width="40"><input name="langpair" value="en|ja" title="&#26085;&#26412;&#35486;/Japanese" src="http://photos1.blogger.com/img/43/1633/320/13539955_925e6683c8.jpg" onclick="this.form.langpair.value=this.value" height="20" type="image" width="30">
+      </td>
+      <td width="40"><input name="langpair" value="en|ko" title="&#54620;&#44397;&#50612;/Korean" src="http://photos1.blogger.com/img/43/1633/320/13539958_3c3b482c95.jpg" onclick="this.form.langpair.value=this.value" height="20" type="image" width="30">
+      </td>
+      <td width="40"><input name="langpair" value="en|zh-CN" title="&#20013;&#25991;&#65288;&#31616;&#20307;&#65289;/Chinese Simplified" src="http://photos1.blogger.com/img/43/1633/320/14324441_5ca5ce3423.jpg" onclick="this.form.langpair.value=this.value" height="20" type="image" width="30">
+      </td>
+    </form>
+  </tr>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-3264712-1");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+</body></html>
+1    
+
+
+
