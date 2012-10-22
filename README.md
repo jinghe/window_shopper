@@ -10,7 +10,7 @@ Dependent Packages
 
 * Numpy
 * Scipy
-* scikit-learn
+* scikit-learn 0.11
 * nltk 2.0.1
 
 Data
