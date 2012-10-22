@@ -264,8 +264,8 @@ class BigramScorer:
         #print tf, doc_len, coll_ratio, self.mu, prob
         return np.log(prob)
 
-STOP_SET = set(map(lambda line: line.strip(), open('stoplist.dft').readlines()));
-IDF_DICT = IDFDictionary('enidf.norm.txt')
+STOP_SET = set(map(lambda line: line.strip(), open('dict/stoplist.dft').readlines()));
+IDF_DICT = IDFDictionary('dict/idf.norm.txt')
 #COMPLETE_TEXT_CHAIN = TextChain([TextTokenizer(wordpunct_tokenize), TextTokenNormalizer(), TextStopRemover(), TextStemmer(stemmer), TextModeler(model_factory)])
 #MODELER_TEXT_CHAIN = TextChain([TextModeler(model_factory)])
 
